@@ -1,0 +1,42 @@
+from bs4 import BeautifulSoup
+import requests
+#sets the directory link to scrap
+pagelink= "http://www.wcainterglobal.com/Directory?networkId=4&pageNumber=1&pageSize=100&searchby=CountryCode&orderby=CountryCity&country=GD&city=&keyword=&_t=5ae15c18"
+#gets the page
+pageresponse= requests.get(pagelink, timeout=5)
+#gets the content of the page
+pagecontent= BeautifulSoup(pageresponse.content, "html.parser")
+#finds all a tags
+pagelinks= pagecontent.find_all("a", href=True)
+#creates an empty directory list
+directorylinks=[]
+#finds all valid links for each member listed
+for i in pagelinks:
+    if "directory" in i["href"]:
+        directorylinks+=[i["href"]]
+#prints directory list
+print(directorylinks)
+
+#scraps each directory in search of the member profile information
+for i in directorylinks:
+    dirpage=i
+    dirresp=requests.get(dirpage, timeout=5)
+    dirpagecontent=BeautifulSoup(dirresp.content, "html.parser")
+    dirlinks= dirpagecontent.find_all(class_="memberprofile_row")
+    #print(dirlinks)
+
+    membername=dirpagecontent.find_all("div", class_="member_name")
+    for i in membername:
+        print(i.text)
+
+    #for i in dirlinks:
+     #   if "mailto" in i["href"]:
+      #      print(i)
+
+
+
+
+
+
+
+
